@@ -1,0 +1,274 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // klo pake js kasih -js jangan lupa
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // abaikan saja error nya kalau prisma versi di bawah 7 atau 5 gtu lupa
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum ClassType {
+  ONLINE
+  OFFLINE_JAKARTA
+  OFFLINE_BEKASI
+  OFFLINE_STUDIO
+}
+
+enum PaymentType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STAFF)
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  salaries Salary[]
+  auditLogs AuditLog[]
+  transactions Transaction[]
+}
+
+model Instrument {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  classes  Class[]
+  teachers Teacher[]
+}
+
+model Class {
+  id           String      @id @default(cuid())
+  name         String
+  description  String?
+  pricePerMonth Float
+  duration     Int         // in minutes
+  maxStudents  Int         @default(10)
+  isActive     Boolean     @default(true)
+  groupLink    String?     // WhatsApp/Zoom group link
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  instrumentId String
+  instrument   Instrument @relation(fields: [instrumentId], references: [id])
+
+  classLocations ClassLocation[]
+  teacherClasses TeacherClass[]
+  enrollments    Enrollment[]
+}
+
+model ClassLocation {
+  id        String    @id @default(cuid())
+  classId   String
+  type      ClassType
+  address   String?
+  notes     String?
+
+  class     Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+}
+
+model Teacher {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  phone      String
+  experience Int      // in years
+  cvPath     String?
+  bio        String?
+  isActive   Boolean  @default(true)
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  instruments  Instrument[]
+  teacherClasses TeacherClass[]
+  schedules    Schedule[]
+  salaries     Salary[]
+}
+
+model TeacherClass {
+  id        String   @id @default(cuid())
+  teacherId String
+  classId   String
+  createdAt DateTime @default(now())
+
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, classId])
+}
+
+model Schedule {
+  id        String    @id @default(cuid())
+  teacherId String
+  dayOfWeek Int       // 0=Sun, 1=Mon, ..., 6=Sat
+  startTime String    // "HH:MM"
+  endTime   String    // "HH:MM"
+  isAvailable Boolean @default(true)
+  createdAt DateTime  @default(now())
+
+  teacher     Teacher     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  name        String
+  age         Int
+  email       String   @unique
+  whatsapp    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  studentId   String
+  classId     String
+  teacherId   String?
+  scheduleId  String?
+  locationType ClassType
+  address     String?
+  status      String    @default("ACTIVE") // ACTIVE, INACTIVE, GRADUATED
+  startDate   DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  student     Student   @relation(fields: [studentId], references: [id])
+  class       Class     @relation(fields: [classId], references: [id])
+  schedule    Schedule? @relation(fields: [scheduleId], references: [id])
+  invoices    Invoice[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  type        PaymentType
+  description String?
+  createdAt   DateTime @default(now())
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  type        PaymentType
+  amount      Float
+  description String
+  date        DateTime          @default(now())
+  status      TransactionStatus @default(COMPLETED)
+  referenceNo String?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  createdById String?
+  createdBy   User?     @relation(fields: [createdById], references: [id])
+  invoices    Invoice[]
+}
+
+model Invoice {
+  id           String   @id @default(cuid())
+  invoiceNo    String   @unique
+  enrollmentId String
+  transactionId String?
+  amount       Float
+  dueDate      DateTime
+  paidDate     DateTime?
+  status       String   @default("UNPAID") // UNPAID, PAID, OVERDUE
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  enrollment   Enrollment   @relation(fields: [enrollmentId], references: [id])
+  transaction  Transaction? @relation(fields: [transactionId], references: [id])
+}
+
+model Salary {
+  id          String   @id @default(cuid())
+  type        String   // TEACHER, STAFF
+  teacherId   String?
+  staffId     String?
+  amount      Float
+  period      String   // "YYYY-MM"
+  paidDate    DateTime?
+  status      String   @default("PENDING") // PENDING, PAID
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  teacher     Teacher? @relation(fields: [teacherId], references: [id])
+  staff       User?    @relation(fields: [staffId], references: [id])
+}
+
+model Asset {
+  id           String   @id @default(cuid())
+  name         String
+  category     String
+  description  String?
+  purchaseDate DateTime
+  purchasePrice Float
+  currentValue Float?
+  condition    String   @default("GOOD") // GOOD, FAIR, POOR, DAMAGED
+  location     String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model TeacherApplication {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  experience  Int
+  cvPath      String?
+  instruments String   // JSON array of instruments
+  motivation  String?
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
