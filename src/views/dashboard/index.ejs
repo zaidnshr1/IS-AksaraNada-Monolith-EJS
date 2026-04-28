@@ -1,0 +1,202 @@
+<%- include('../layouts/main', { body: `
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Dashboard</h1>
+    <div class="subtitle">Selamat datang, ${user.name} — Ringkasan sistem AksaraNada</div>
+  </div>
+  <div>
+    <span class="badge badge-gold">${new Date().toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</span>
+  </div>
+</div>
+
+<div class="gold-line"></div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Murid Aktif</div>
+    <div class="stat-value gold">${stats.totalStudents || 0}</div>
+    <div class="stat-sub">Terdaftar</div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Guru Aktif</div>
+    <div class="stat-value">${stats.totalTeachers || 0}</div>
+    <div class="stat-sub">Terverifikasi</div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Kelas Aktif</div>
+    <div class="stat-value">${stats.totalClasses || 0}</div>
+    <div class="stat-sub">Program tersedia</div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pemasukan Bulan Ini</div>
+    <div class="stat-value green" style="font-size:1.5rem">${stats.monthlyIncome ? 'Rp ' + stats.monthlyIncome.toLocaleString('id-ID') : 'Rp 0'}</div>
+    <div class="stat-sub">Bulan berjalan</div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pengeluaran Bulan Ini</div>
+    <div class="stat-value red" style="font-size:1.5rem">${stats.monthlyExpense ? 'Rp ' + stats.monthlyExpense.toLocaleString('id-ID') : 'Rp 0'}</div>
+    <div class="stat-sub">Bulan berjalan</div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Saldo Bersih</div>
+    <div class="stat-value ${stats.netBalance >= 0 ? 'green' : 'red'}" style="font-size:1.4rem">${stats.netBalance ? 'Rp ' + Math.abs(stats.netBalance).toLocaleString('id-ID') : 'Rp 0'}</div>
+    <div class="stat-sub">${stats.netBalance >= 0 ? '↑ Positif' : '↓ Negatif'}</div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </div>
+  </div>
+  ${stats.pendingApplications > 0 ? `
+  <div class="stat-card" style="border-color: rgba(201,168,76,0.4);">
+    <div class="stat-label">Lamaran Guru Pending</div>
+    <div class="stat-value gold">${stats.pendingApplications}</div>
+    <div class="stat-sub"><a href="/teachers/applications" style="color:var(--gold)">Tinjau sekarang →</a></div>
+    <div class="stat-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+    </div>
+  </div>
+  ` : ''}
+</div>
+
+<!-- Charts & Tables Row -->
+<div class="grid-2" style="gap:24px; margin-bottom:24px;">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Tren Keuangan (6 Bulan)</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-container" style="height:220px">
+        <canvas id="financeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Pendaftar Terbaru</div>
+      <a href="/students" class="btn btn-ghost btn-sm">Lihat Semua</a>
+    </div>
+    <div class="card-body" style="padding-top:10px">
+      ${recentEnrollments.length === 0 ? `<div class="empty-state" style="padding:30px"><p>Belum ada pendaftar</p></div>` :
+        recentEnrollments.map(e => `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div class="avatar avatar-sm">${e.student.name.charAt(0)}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500;color:var(--text-primary)">${e.student.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${e.class.instrument?.name || ''} · ${e.class.name}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted)">${moment(e.createdAt).fromNow()}</div>
+        </div>`).join('')
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Transaksi Terbaru</div>
+    <a href="/finance" class="btn btn-ghost btn-sm">Lihat Semua</a>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Deskripsi</th>
+            <th>Kategori</th>
+            <th>Tipe</th>
+            <th class="text-right">Nominal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${recentTransactions.length === 0 ? `<tr><td colspan="5" class="text-center" style="padding:30px;color:var(--text-muted)">Belum ada transaksi</td></tr>` :
+            recentTransactions.map(t => `
+            <tr>
+              <td style="color:var(--text-muted)">${moment(t.date).format('DD MMM YY')}</td>
+              <td>${t.description}</td>
+              <td><span class="badge badge-gray">${t.category.name}</span></td>
+              <td><span class="badge ${t.type === 'INCOME' ? 'badge-green' : 'badge-red'}">${t.type === 'INCOME' ? '↑ Masuk' : '↓ Keluar'}</span></td>
+              <td class="text-right font-mono" style="color:${t.type === 'INCOME' ? 'var(--green)' : 'var(--red)'}">
+                ${t.type === 'INCOME' ? '+' : '-'}Rp ${t.amount.toLocaleString('id-ID')}
+              </td>
+            </tr>`).join('')
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const chartData = ${chartData};
+const ctx = document.getElementById('financeChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: chartData.map(d => d.month),
+    datasets: [
+      {
+        label: 'Pemasukan',
+        data: chartData.map(d => d.income),
+        backgroundColor: 'rgba(82,201,122,0.3)',
+        borderColor: '#52c97a',
+        borderWidth: 1.5,
+        borderRadius: 4,
+      },
+      {
+        label: 'Pengeluaran',
+        data: chartData.map(d => d.expense),
+        backgroundColor: 'rgba(224,82,82,0.25)',
+        borderColor: '#e05252',
+        borderWidth: 1.5,
+        borderRadius: 4,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#a09880', font: { family: 'DM Sans', size: 11 } } },
+      tooltip: {
+        backgroundColor: '#1a1a35',
+        titleColor: '#c9a84c',
+        bodyColor: '#e8e4d9',
+        borderColor: 'rgba(201,168,76,0.3)',
+        borderWidth: 1,
+        callbacks: {
+          label: ctx => ' Rp ' + ctx.parsed.y.toLocaleString('id-ID')
+        }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#5a5545', font: { size: 11 } }, grid: { color: 'rgba(201,168,76,0.05)' } },
+      y: {
+        ticks: {
+          color: '#5a5545', font: { size: 11 },
+          callback: v => 'Rp ' + (v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v.toLocaleString('id-ID'))
+        },
+        grid: { color: 'rgba(201,168,76,0.05)' }
+      }
+    }
+  }
+});
+</script>
+` }) %>

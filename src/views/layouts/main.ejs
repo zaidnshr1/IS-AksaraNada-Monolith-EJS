@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %> — AksaraNada</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-name">AksaraNada</div>
+        <div class="brand-sub">Internal System</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Utama</div>
+
+        <a href="/dashboard" class="nav-item <%= currentPath === '/dashboard' || currentPath === '/' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+
+        <div class="nav-section-label">Akademik</div>
+
+        <a href="/students" class="nav-item <%= currentPath.startsWith('/students') ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Murid
+        </a>
+
+        <a href="/teachers" class="nav-item <%= currentPath.startsWith('/teachers') ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Guru
+          <% /* badge for pending */ %>
+        </a>
+
+        <a href="/classes" class="nav-item <%= currentPath.startsWith('/classes') ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Kelas
+        </a>
+
+        <a href="/schedules" class="nav-item <%= currentPath.startsWith('/schedules') ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Jadwal Guru
+        </a>
+
+        <div class="nav-section-label">Keuangan</div>
+
+        <a href="/finance" class="nav-item <%= currentPath === '/finance' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Transaksi
+        </a>
+
+        <a href="/finance/categories" class="nav-item <%= currentPath === '/finance/categories' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Kategori
+        </a>
+
+        <a href="/finance/salary" class="nav-item <%= currentPath === '/finance/salary' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Penggajian
+        </a>
+
+        <a href="/finance/report" class="nav-item <%= currentPath === '/finance/report' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Laporan
+        </a>
+
+        <a href="/finance/health" class="nav-item <%= currentPath === '/finance/health' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Kesehatan Keuangan
+        </a>
+
+        <div class="nav-section-label">Operasional</div>
+
+        <a href="/assets" class="nav-item <%= currentPath.startsWith('/assets') ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Aset
+        </a>
+
+        <% if (user && user.role === 'ADMIN') { %>
+        <div class="nav-section-label">Admin</div>
+        <a href="/auth/users" class="nav-item <%= currentPath === '/auth/users' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Manajemen Akun
+        </a>
+        <% } %>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar"><%= user ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+          <div class="sidebar-user-info">
+            <div class="user-name"><%= user ? user.name : 'User' %></div>
+            <div class="user-role"><%= user ? user.role : '' %></div>
+          </div>
+        </div>
+        <form action="/auth/logout" method="POST">
+          <button type="submit" class="nav-item" style="width:100%; color: var(--red);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Keluar
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <header class="top-header">
+        <div class="page-title-area">
+          <div class="page-title"><%- title %></div>
+        </div>
+        <div class="header-actions">
+          <a href="/daftar-murid" target="_blank" class="btn btn-outline btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Form Pendaftaran
+          </a>
+          <div class="dot dot-green" data-tooltip="Server Online"></div>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <%- body %>
+      </main>
+    </div>
+  </div>
+
+  <!-- Flash Alerts -->
+  <div class="alert-container" id="alertContainer">
+    <% if (success && success.length) { %>
+      <% success.forEach(msg => { %>
+        <div class="alert alert-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <%= msg %>
+          <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      <% }) %>
+    <% } %>
+    <% if (error && error.length) { %>
+      <% (Array.isArray(error) ? error : [error]).forEach(msg => { %>
+        <div class="alert alert-error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <%= msg %>
+          <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
