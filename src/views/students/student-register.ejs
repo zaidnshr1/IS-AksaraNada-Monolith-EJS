@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Login — AksaraNada Internal</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 50% 60% at 10% 50%, rgba(201,168,76,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 90% 20%, rgba(15,52,96,0.3) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-wrap {
+      width: 420px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-brand {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .login-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 5px;
+      line-height: 1;
+    }
+    .login-logo-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .login-divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 18px auto;
+    }
+    .login-tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), var(--shadow-gold);
+    }
+
+    .login-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .login-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+
+    .login-footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .password-wrap { position: relative; }
+    .password-toggle {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+    }
+    .password-toggle:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="login-logo">AksaraNada</div>
+      <div class="login-logo-sub">Internal Management System</div>
+      <div class="login-divider"></div>
+      <div class="login-tagline">Akses terbatas untuk tim internal</div>
+    </div>
+
+    <div class="login-card">
+      <div class="login-title">Masuk ke Sistem</div>
+      <div class="login-desc">Gunakan kredensial yang diberikan oleh administrator.</div>
+
+      <% if (error && error.length) { %>
+        <% (Array.isArray(error) ? error : [error]).forEach(msg => { %>
+          <div class="alert alert-error" style="margin-bottom:20px; position:static; max-width:none; animation:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <%= msg %>
+          </div>
+        <% }) %>
+      <% } %>
+
+      <form action="/auth/login" method="POST" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label">Email <span class="required">*</span></label>
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="email@aksaranada.com"
+            autocomplete="username"
+            required
+            maxlength="255"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password <span class="required">*</span></label>
+          <div class="password-wrap">
+            <input
+              type="password"
+              name="password"
+              id="passwordInput"
+              class="form-control"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+              minlength="6"
+              style="padding-right: 42px"
+            >
+            <button type="button" class="password-toggle" onclick="togglePassword()" id="pwToggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" id="eyeIcon">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold w-100" style="padding:13px; font-size:13px; letter-spacing:2px; justify-content:center; margin-top:8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          MASUK
+        </button>
+      </form>
+
+      <div class="login-footer">
+        Hubungi administrator jika ada masalah akses.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('passwordInput');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+</body>
+</html>
